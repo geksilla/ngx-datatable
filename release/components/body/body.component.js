@@ -70,7 +70,9 @@ var DataTableBodyComponent = /** @class */ (function () {
         },
         set: function (val) {
             this._rows = val;
-            this.rowExpansions.clear();
+            if (this.scrollbarV) {
+                this.rowExpansions.clear();
+            }
             this.recalcLayout();
         },
         enumerable: true,
@@ -327,7 +329,7 @@ var DataTableBodyComponent = /** @class */ (function () {
      */
     DataTableBodyComponent.prototype.getRowAndDetailHeight = function (row) {
         var rowHeight = this.getRowHeight(row);
-        var expanded = this.rowExpansions.get(row);
+        var expanded = this.rowExpansions.get(this.getRowIndex(row));
         // Adding detail row height if its expanded.
         if (expanded === 1) {
             rowHeight += this.getDetailRowHeight(row);
@@ -482,17 +484,18 @@ var DataTableBodyComponent = /** @class */ (function () {
     DataTableBodyComponent.prototype.toggleRowExpansion = function (row) {
         // Capture the row index of the first row that is visible on the viewport.
         var viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
-        var expanded = this.rowExpansions.get(row);
+        var idx = this.getRowIndex(row);
+        var expanded = this.rowExpansions.get(idx);
         // If the detailRowHeight is auto --> only in case of non-virtualized scroll
         if (this.scrollbarV) {
             var detailRowHeight = this.getDetailRowHeight(row) * (expanded ? -1 : 1);
             // const idx = this.rowIndexes.get(row) || 0;
-            var idx = this.getRowIndex(row);
-            this.rowHeightsCache.update(idx, detailRowHeight);
+            var idx_1 = this.getRowIndex(row);
+            this.rowHeightsCache.update(idx_1, detailRowHeight);
         }
         // Update the toggled row and update thive nevere heights in the cache.
         expanded = expanded ^= 1;
-        this.rowExpansions.set(row, expanded);
+        this.rowExpansions.set(idx, expanded);
         this.detailToggle.emit({
             rows: [row],
             currentIndex: viewPortFirstRowIndex
@@ -509,7 +512,7 @@ var DataTableBodyComponent = /** @class */ (function () {
         var viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
         for (var _i = 0, _a = this.rows; _i < _a.length; _i++) {
             var row = _a[_i];
-            this.rowExpansions.set(row, rowExpanded);
+            this.rowExpansions.set(this.getRowIndex(row), rowExpanded);
         }
         if (this.scrollbarV) {
             // Refresh the full row heights cache since every row was affected.
@@ -566,7 +569,7 @@ var DataTableBodyComponent = /** @class */ (function () {
                 this.rowExpansions.set(group, 1);
             }
         }
-        var expanded = this.rowExpansions.get(row);
+        var expanded = this.rowExpansions.get(this.getRowIndex(row));
         return expanded === 1;
     };
     /**

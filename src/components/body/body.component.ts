@@ -123,7 +123,9 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
 
   @Input() set rows(val: any[]) {
     this._rows = val;
-    this.rowExpansions.clear();
+    if (this.scrollbarV) {
+      this.rowExpansions.clear();
+    }
     this.recalcLayout();
   }
 
@@ -428,7 +430,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
    */
   getRowAndDetailHeight(row: any): number {
     let rowHeight = this.getRowHeight(row);
-    const expanded = this.rowExpansions.get(row);
+    const expanded = this.rowExpansions.get(this.getRowIndex(row));
 
     // Adding detail row height if its expanded.
     if (expanded === 1) {
@@ -582,7 +584,8 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
   toggleRowExpansion(row: any): void {
     // Capture the row index of the first row that is visible on the viewport.
     const viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
-    let expanded = this.rowExpansions.get(row);
+    const idx = this.getRowIndex(row);
+    let expanded = this.rowExpansions.get(idx);
 
     // If the detailRowHeight is auto --> only in case of non-virtualized scroll
     if (this.scrollbarV) {
@@ -594,7 +597,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
 
     // Update the toggled row and update thive nevere heights in the cache.
     expanded = expanded ^= 1;
-    this.rowExpansions.set(row, expanded);
+    this.rowExpansions.set(idx, expanded);
 
     this.detailToggle.emit({
       rows: [row],
@@ -615,7 +618,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
     const viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
 
     for (const row of this.rows) {
-      this.rowExpansions.set(row, rowExpanded);
+      this.rowExpansions.set(this.getRowIndex(row), rowExpanded);
     }
 
     if (this.scrollbarV) {
@@ -680,7 +683,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
       }
     }    
 
-    const expanded = this.rowExpansions.get(row);
+    const expanded = this.rowExpansions.get(this.getRowIndex(row));
     return expanded === 1;
   }
 

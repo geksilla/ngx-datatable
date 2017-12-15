@@ -459,18 +459,18 @@ var DataTableBodyComponent = /** @class */ (function () {
     DataTableBodyComponent.prototype.toggleRowExpansion = function (row) {
         // Capture the row index of the first row that is visible on the viewport.
         var viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
-        var idx = this.getRowIndex(row);
-        var expanded = this.rowExpansions.get(idx);
+        var rowId = this.getRowId(row);
+        var expanded = this.rowExpansions.get(rowId);
         // If the detailRowHeight is auto --> only in case of non-virtualized scroll
         if (this.scrollbarV) {
             var detailRowHeight = this.getDetailRowHeight(row) * (expanded ? -1 : 1);
             // const idx = this.rowIndexes.get(row) || 0;
-            var idx_1 = this.getRowIndex(row);
-            this.rowHeightsCache.update(idx_1, detailRowHeight);
+            var idx = this.getRowIndex(row);
+            this.rowHeightsCache.update(idx, detailRowHeight);
         }
         // Update the toggled row and update thive nevere heights in the cache.
         expanded = expanded ^= 1;
-        this.rowExpansions.set(idx, expanded);
+        this.rowExpansions.set(rowId, expanded);
         this.detailToggle.emit({
             rows: [row],
             currentIndex: viewPortFirstRowIndex
@@ -487,7 +487,7 @@ var DataTableBodyComponent = /** @class */ (function () {
         var viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
         for (var _i = 0, _a = this.rows; _i < _a.length; _i++) {
             var row = _a[_i];
-            this.rowExpansions.set(this.getRowIndex(row), rowExpanded);
+            this.rowExpansions.set(this.getRowId(row), rowExpanded);
         }
         if (this.scrollbarV) {
             // Refresh the full row heights cache since every row was affected.
@@ -544,7 +544,7 @@ var DataTableBodyComponent = /** @class */ (function () {
                 this.rowExpansions.set(group, 1);
             }
         }
-        var expanded = this.rowExpansions.get(this.getRowIndex(row));
+        var expanded = this.rowExpansions.get(this.getRowId(row));
         return expanded === 1;
     };
     /**
@@ -552,6 +552,12 @@ var DataTableBodyComponent = /** @class */ (function () {
      */
     DataTableBodyComponent.prototype.getRowIndex = function (row) {
         return this.rowIndexes.get(row) || 0;
+    };
+    DataTableBodyComponent.prototype.getRowId = function (row) {
+        if (this.trackByProp) {
+            return row[this.trackByProp] || this.getRowIndex(row);
+        }
+        return this.getRowIndex(row);
     };
     __decorate([
         core_1.Input(),

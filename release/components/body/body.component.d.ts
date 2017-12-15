@@ -183,4 +183,5 @@ export declare class DataTableBodyComponent implements OnInit, OnDestroy {
      * Gets the row index given a row
      */
     getRowIndex(row: any): number;
+    getRowId(row: any): any;
 }

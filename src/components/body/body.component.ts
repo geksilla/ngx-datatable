@@ -593,8 +593,8 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
   toggleRowExpansion(row: any): void {
     // Capture the row index of the first row that is visible on the viewport.
     const viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
-    const idx = this.getRowIndex(row);
-    let expanded = this.rowExpansions.get(idx);
+    const rowId = this.getRowId(row);
+    let expanded = this.rowExpansions.get(rowId);
 
     // If the detailRowHeight is auto --> only in case of non-virtualized scroll
     if (this.scrollbarV) {
@@ -606,7 +606,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
 
     // Update the toggled row and update thive nevere heights in the cache.
     expanded = expanded ^= 1;
-    this.rowExpansions.set(idx, expanded);
+    this.rowExpansions.set(rowId, expanded);
 
     this.detailToggle.emit({
       rows: [row],
@@ -627,7 +627,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
     const viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
 
     for (const row of this.rows) {
-      this.rowExpansions.set(this.getRowIndex(row), rowExpanded);
+      this.rowExpansions.set(this.getRowId(row), rowExpanded);
     }
 
     if (this.scrollbarV) {
@@ -690,9 +690,8 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
       for (const group of this.groupedRows) {
         this.rowExpansions.set(group, 1);
       }
-    }
-
-    const expanded = this.rowExpansions.get(this.getRowIndex(row));
+    }    
+    const expanded = this.rowExpansions.get(this.getRowId(row));
     return expanded === 1;
   }
 
@@ -703,4 +702,10 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
     return this.rowIndexes.get(row) || 0;
   }
 
+  getRowId(row: any) {
+    if (this.trackByProp) {
+      return row[this.trackByProp] || this.getRowIndex(row);
+    }
+    return this.getRowIndex(row);
+  }
 }

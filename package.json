@@ -68,5 +68,15 @@
     "tslint-config-security": "^1.16.0",
     "tslint-config-swimlane": "^4.0.0",
     "typescript": "~3.5.3"
-  }
+  },
+  "main": "dist/bundles/swimlane-ngx-datatable.umd.js",
+  "module": "dist/fesm5/swimlane-ngx-datatable.js",
+  "es2015": "dist/fesm2015/swimlane-ngx-datatable.js",
+  "esm5": "dist/esm5/swimlane-ngx-datatable.js",
+  "esm2015": "dist/esm2015/swimlane-ngx-datatable.js",
+  "fesm5": "dist/fesm5/swimlane-ngx-datatable.js",
+  "fesm2015": "dist/fesm2015/swimlane-ngx-datatable.js",
+  "typings": "dist/swimlane-ngx-datatable.d.ts",
+  "metadata": "dist/swimlane-ngx-datatable.metadata.json",
+  "sideEffects": false
 }

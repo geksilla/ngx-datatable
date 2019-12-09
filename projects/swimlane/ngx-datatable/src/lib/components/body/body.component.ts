@@ -664,7 +664,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
     // Capture the row index of the first row that is visible on the viewport.
     const viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
     const rowExpandedIdx = this.getRowExpandedIdx(row, this.rowExpansions);
-    const expanded = rowExpandedIdx > -1;
+    const expanded = this.getRowExpanded(row);
 
     // If the detailRowHeight is auto --> only in case of non-virtualized scroll
     if (this.scrollbarV && this.virtualization) {
@@ -771,9 +771,19 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
   getRowExpandedIdx(row: any, expanded: any[]): number {
     if (!expanded || !expanded.length) return -1;
 
-    const rowId = this.rowIdentity(row);
+    if (this.groupRowsBy) {
+      const rowId = this.rowIdentity(row);
+
+      return expanded.findIndex((r) => {
+        const id = this.rowIdentity(r);
+        return id === rowId;
+      });
+    }
+
+    const rowId = this.getRowId(row);
+
     return expanded.findIndex((r) => {
-      const id = this.rowIdentity(r);
+      const id = this.getRowId(r);
       return id === rowId;
     });
   }
@@ -787,5 +797,12 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
 
   onTreeAction(row: any) {
     this.treeAction.emit({ row });
+  }
+
+  getRowId(row: any) {
+    if (this.trackByProp) {
+      return row[this.trackByProp] || this.getRowIndex(row);
+    }
+    return this.getRowIndex(row);
   }
 }
